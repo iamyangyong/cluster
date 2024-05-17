@@ -10,8 +10,6 @@ import cv2
 import math as ma
 import random
 
-filepath = r'/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/'
-
 # get cluster in every frame
 # pixelSize = pysical size/magnification factor
 pixelSize = 0.11
@@ -23,10 +21,6 @@ minpts = 5
 # epsilon = (drift/pixelSize)*sqrt(minpts);
 epsilon = 35
 
-# 返回值有三个：
-# 1、原始记录
-# 2、按照trackId分组并按照frame升序后(t,x,y) list[list1,list2,....] 其中list中存放(t,x,y) 超过连续15帧以上的轨迹
-# 3、索引ID
 def loadCoordinateFromCSV(filepath,filename):
     # 原始数据记录
     originTracks = []
@@ -35,18 +29,12 @@ def loadCoordinateFromCSV(filepath,filename):
     # 有效索引
     validIndex = []
 
-    pathlist = glob.glob(filepath + 'test.csv')
+    pathlist = glob.glob(filepath + filename)
     # 文件路径+文件名
     for csvfilepath in pathlist:
         # 文件名
         csvfilename= os.path.basename(csvfilepath)
-        # print(csvfilepath,'...',csvfilename)
         fio_raw=pd.read_csv(csvfilepath)
-        # print(fio_raw.head)
-        # fio=fio_raw.drop([0],axis=1)
-        # fio_raw.head()
-        # 将FRAME列改成int
-        # fio_raw['FRAME'] = fio_raw['FRAME'].astype(int)
         # 按照FRAME列排序
         fio_raw.sort_values(by='FRAME',inplace=True,ascending=True)
         # 取出所有TRACK_ID并去重然后升序
@@ -59,13 +47,9 @@ def loadCoordinateFromCSV(filepath,filename):
                     originList=[]
                     for item in trackItem:
                         #  让帧从1开始计数
-                        #  t = int(item[8])+1
-                        #  originList.append((t,item[4],item[5]))
                         t = int(item[8])+1
                         x = float(item[4])*9.0909
                         y = float(item[5])*9.0909
-                        # x = item[4]
-                        # y = item[3]
                         originList.append((t,x,y))
                 originTracks.append(originList) #原始数据
 
@@ -235,10 +219,6 @@ def plotParticleEveryFrameInCluster(maxFrameNum,dataByFrame,clusterData):
                 for index  in clusterIdx[0]:
                     dataCusterPoint1.append((pointList[index][0],pointList[index][1]))
                 dataCusterPoint2 = np.array(dataCusterPoint1,dtype = np.int32)
-                # from scipy.spatial import ConvexHull 用于计算面积
-                # hull= ConvexHull(dataCusterPoint2)  
-                # for simplex in hull.simplices:
-                #     plt.plot(dataCusterPoint2[simplex,0],dataCusterPoint2[simplex,1],'k-')
                 hull = cv2.convexHull(dataCusterPoint2)
                 cv2.polylines(img,[hull],True,(0,0,255),2)
                 po = []
@@ -249,10 +229,10 @@ def plotParticleEveryFrameInCluster(maxFrameNum,dataByFrame,clusterData):
                 dataCusterPoint2 = None
             imagefilename = filepath + "particleResultInCluster/{}.jpg".format(str(i))
             cv2.imwrite(imagefilename,img)
-        # break
+        break
 
 if __name__ == "__main__":
-    originTracks,validTracks,validIndex = loadCoordinateFromCSV(filepath,'filename')
+    originTracks,validTracks,validIndex = loadCoordinateFromCSV(filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/',filename='test.csv')
     dataByFrame,maxFrameNum = getCoordinateByFrame(validTracks)
     clusterData = cluster(dataByFrame,maxFrameNum)
-    plotParticleEveryFrameInCluster(maxFrameNum,dataByFrame,clusterData)
+    plotParticleEveryFrameInCluster(maxFrameNum,dataByFrame,clusterData,filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/')

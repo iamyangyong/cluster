@@ -1,4 +1,5 @@
 Execute the following four functions in turn
+
 originTracks,validTracks,validIndex = loadCoordinateFromCSV(filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/',filename='test.csv')
 dataByFrame,maxFrameNum = getCoordinateByFrame(validTracks)
 clusterData = cluster(dataByFrame,maxFrameNum)

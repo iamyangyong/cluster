@@ -1,10 +1,3 @@
-Execute the following four functions in turn
-
-originTracks,validTracks,validIndex = loadCoordinateFromCSV(filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/',filename='test.csv')
-dataByFrame,maxFrameNum = getCoordinateByFrame(validTracks)
-clusterData = cluster(dataByFrame,maxFrameNum)
-plotParticleEveryFrameInCluster(maxFrameNum,dataByFrame,clusterData,filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/')
-    
 
 1.originTracks,validTracks,validIndex = loadCoordinateFromCSV(filepath='/ldap_shared/home/v_yy/Project/MoTT/cluster/test4/',filename='test.csv')
    The purpose of the loadCoordinateCSV.py file is to cluster the particles and draw their boundaries, calculate the area, and count the number of particles
